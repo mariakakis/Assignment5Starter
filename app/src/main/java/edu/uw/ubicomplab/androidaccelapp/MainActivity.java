@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements BluetoothLeUart.C
     private boolean isRecentTrain;
     private String recentLabel;
 
+    private static final String DEVICE_NAME = "Adafruit Bluefruit LE";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothLeUart.C
         // Get Bluetooth
         messages = findViewById(R.id.bluetoothText);
         messages.setMovementMethod(new ScrollingMovementMethod());
-        uart = new BluetoothLeUart(getApplicationContext());
+        uart = new BluetoothLeUart(getApplicationContext(), DEVICE_NAME);
 
         // Check permissions
         ActivityCompat.requestPermissions(this,
