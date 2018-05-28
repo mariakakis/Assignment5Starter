@@ -1,6 +1,5 @@
 package edu.uw.ubicomplab.androidaccelapp;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -22,8 +21,6 @@ import java.util.WeakHashMap;
 import java.lang.String;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
-
-import static android.support.v4.app.ActivityCompat.startActivityForResult;
 
 public class BluetoothLeUart extends BluetoothGattCallback implements BluetoothAdapter.LeScanCallback {
 
@@ -60,6 +57,8 @@ public class BluetoothLeUart extends BluetoothGattCallback implements BluetoothA
     private BluetoothGattCharacteristic disSWRev;
     private boolean disAvailable;
 
+    private String targetDeviceName = "Adafruit Bluefruit LE";
+
     // Queues for characteristic read (synchronous)
     private Queue<BluetoothGattCharacteristic> readQueue;
 
@@ -75,8 +74,9 @@ public class BluetoothLeUart extends BluetoothGattCallback implements BluetoothA
         public void onDeviceInfoAvailable();
     }
 
-    public BluetoothLeUart(Context context) {
+    public BluetoothLeUart(Context context, String deviceName) {
         super();
+        this.targetDeviceName = deviceName;
         this.context = context;
         this.callbacks = new WeakHashMap<Callback, Object>();
         this.adapter = BluetoothAdapter.getDefaultAdapter();
@@ -334,10 +334,16 @@ public class BluetoothLeUart extends BluetoothGattCallback implements BluetoothA
         if (!parseUUIDs(scanRecord).contains(UART_UUID)) {
             return;
         }
+        Log.d("BLE", "Found device: " + device.getName());
+        if (!device.getName().equals(targetDeviceName)){
+            return;
+        }
         // Notify registered callbacks of found device.
         notifyOnDeviceFound(device);
         // Connect to first found device if required.
         if (connectFirst) {
+
+            Log.d("BLE", "Connecting to: " + device.getName());
             // Stop scanning for devices.
             stopScan();
             // Prevent connections to future found devices.
