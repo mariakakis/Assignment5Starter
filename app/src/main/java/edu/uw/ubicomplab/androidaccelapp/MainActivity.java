@@ -297,8 +297,13 @@ public class MainActivity extends AppCompatActivity implements BluetoothLeUart.C
         double[] features = new double[3]; // TODO: convert your received string into a double[]
         model.addFeatures(features, recentLabel, isRecentTrain);
         if (!isRecentTrain) {
-            String result = model.test();
-            resultText.setText("Result: "+result);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String result = model.test();
+                    resultText.setText("Result: "+result);
+                }
+            });
         }
 
         // Update number of samples shown
